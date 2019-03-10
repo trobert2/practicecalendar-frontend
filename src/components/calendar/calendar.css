@@ -1,0 +1,26 @@
+.DayPicker-Day {
+    display: table-cell;
+    padding: .5em;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.DayPicker-Day--completed {
+  background-color: rgba(76, 175, 80, 0.75);
+  color: #fffff;
+  border-radius: 50%;
+  
+  font-weight: bold;
+}
+
+.DayPicker-Day--incomplete {
+  background-color: rgba(245, 0, 87, 0.75);
+  color: #fffff;
+  border-radius: 50%;
+  
+  font-weight: bold;
+}
+
+.DayPicker-Day--outside {
+  background-color:rgb(255, 255, 255); 
+}

@@ -1,28 +1,104 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Moment from 'moment'
+import { extendMoment } from 'moment-range';
+import { AppBar, Tab, Tabs } from '@material-ui/core';
+import SwipeableViews from 'react-swipeable-views';
+
+import { withStyles, createStyles } from '@material-ui/core/styles';
+
+import Project from './components/project'
+import API from './services/datastoreApi'
+
+
+// import 'bootstrap/dist/css/bootstrap.css';
+
+const moment = extendMoment(Moment);
+const api = new API();
+
+
+const styles = ({ palette, spacing }: Theme) => createStyles({
+	paper: {
+		padding: spacing.unit * 2,
+		textAlign: 'left',
+		color: palette.text.secondary,
+	},
+});
 
 class App extends Component {
+	constructor(){
+		super();
+		this.state = {
+			id: "",
+			projects: [],
+			value: 0,
+		}
+	}
+
+  handleChange = (event, value) => {
+    this.setState({ value });
+  };
+
+  handleChangeIndex = index => {
+    this.setState({ value: index });
+	};
+	
+
+	componentDidMount(){
+		// AJAX call here to get data from server
+		api.getUserEntry((responseJson) => {
+			console.log(responseJson)
+			this.setState({
+				id: responseJson['id'],
+				projects: responseJson['projects']
+			});
+		},
+		(error) => {
+			console.log("Error fetching data:", error);
+			this.forceUpdate();
+		})
+	}
+
   render() {
+	const { classes, theme } = this.props;
+
+	let tabButtons = this.state.projects.map(project => {
+		//TODO: onDelete={this.deleteProject.bind(this)} onComplete={this.addProject.bind(this)}
+		return(
+			<Tab label={project.name} />
+		);
+	});
+
+	let projectItems = this.state.projects.map(project => {
+		//TODO: onDelete={this.deleteProject.bind(this)} onComplete={this.addProject.bind(this)}
+		return(
+			<Project key={project.id} project={project} dir={theme.direction}/> 
+		);
+	});
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
+      <div className="App" >
+				<AppBar position="static" color="default">
+          <Tabs
+            value={this.state.value}
+            onChange={this.handleChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
           >
-            Learn React
-          </a>
-        </header>
-      </div>
+            {tabButtons}
+          </Tabs>
+        </AppBar>
+
+			  <SwipeableViews
+          axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+          index={this.state.value}
+          onChangeIndex={this.handleChangeIndex}
+        >
+					{projectItems}
+				</SwipeableViews>
+			</div>
     );
   }
 }
 
-export default App;
+export default withStyles(styles, { withTheme: true })(App);
