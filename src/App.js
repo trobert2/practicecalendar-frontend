@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Moment from 'moment'
-import { extendMoment } from 'moment-range';
 import { AppBar, Tab, Tabs } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 
@@ -10,9 +8,6 @@ import Project from './components/project'
 import API from './services/datastoreApi'
 
 
-// import 'bootstrap/dist/css/bootstrap.css';
-
-const moment = extendMoment(Moment);
 const api = new API();
 
 
@@ -22,6 +17,13 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
 		textAlign: 'left',
 		color: palette.text.secondary,
 	},
+	tabSelected :{},
+	tabRoot: {
+		'&:hover': {
+      color: palette.text.primary,
+      opacity: 1,
+    },
+	}
 });
 
 class App extends Component {
@@ -46,7 +48,6 @@ class App extends Component {
 	componentDidMount(){
 		// AJAX call here to get data from server
 		api.getUserEntry((responseJson) => {
-			console.log(responseJson)
 			this.setState({
 				id: responseJson['id'],
 				projects: responseJson['projects']
@@ -64,7 +65,11 @@ class App extends Component {
 	let tabButtons = this.state.projects.map(project => {
 		//TODO: onDelete={this.deleteProject.bind(this)} onComplete={this.addProject.bind(this)}
 		return(
-			<Tab label={project.name} />
+			<Tab 
+				label={project.name}
+				classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
+				key={project.id}
+			/>
 		);
 	});
 
@@ -75,6 +80,7 @@ class App extends Component {
 		);
 	});
 
+		// TODO: Make tabs scrollable in case there are many projects
     return (
       <div className="App" >
 				<AppBar position="static" color="default">
@@ -83,9 +89,10 @@ class App extends Component {
             onChange={this.handleChange}
             indicatorColor="primary"
             textColor="primary"
-            variant="fullWidth"
+						variant="fullWidth"
+						centered
           >
-            {tabButtons}
+						{tabButtons}
           </Tabs>
         </AppBar>
 

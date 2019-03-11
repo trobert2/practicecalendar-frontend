@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
-import { Button, Fab } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+import { Button } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 
-const styles = ({ palette, spacing }: Theme) => createStyles({
+const styles = ({ spacing }: Theme) => createStyles({
   fab: {
     margin: spacing.unit,
   },
@@ -25,7 +24,6 @@ class Task extends Component {
 	}
 
   render() {
-		const { classes } = this.props;
     return (
       <tr className="Task" id={this.props.task.id}>
 				<th>
@@ -51,7 +49,3 @@ Task.propTypes = {
 }
 
 export default withStyles(styles, { withTheme: true })(Task);
-
-//		<Fab aria-label="Delete" className={classes.fab}  type="submit" color="secondary" size="small" onClick={this.deleteTask.bind(this, this.props.task.id)} value="Submit">
-//			<Delete />
-//		</Fab> 

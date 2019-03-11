@@ -65,7 +65,7 @@ class Home extends Component {
 								<div  className={classes.appBarRoot}>
 									<AppBar position="static">
 										<Toolbar>
-											<Typography variant="h6" color="inherit" className={classes.grow}>
+											<Typography variant="caption" color="inherit" className={classes.grow}>
 												Do and Progress
 											</Typography>
 											<Button
@@ -79,7 +79,6 @@ class Home extends Component {
 										</Toolbar>
 									</AppBar>
 								</div>
-								
 								<App />
 							</div>
 						)

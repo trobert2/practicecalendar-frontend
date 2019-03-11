@@ -8,7 +8,6 @@ import Tasks from './tasks'
 import AddTask from './addTask'
 import Calendar from './calendar/calendar'
 
-// import 'bootstrap/dist/css/bootstrap.css';
 
 const moment = extendMoment(Moment);
 
