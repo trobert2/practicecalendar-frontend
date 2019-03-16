@@ -1,20 +1,56 @@
-
 export default class API {
     // TODO: Do something if not set.
-    idToken = localStorage.getItem('id_token');
-    apiEndpoint = "https://europe-west1-trobert2-serverless.cloudfunctions.net/practicecalendar-backend";
+    apiEndpoint = 'https://europe-west1-trobert2-serverless.cloudfunctions.net/practicecalendar-backend';
 
     getUserEntry = (successCallback, errorCallback) => {
-        fetch(this.apiEndpoint, { 
+        let idToken = localStorage.getItem('id_token');
+        fetch(this.apiEndpoint, {
             method: 'GET',
-            mode: "cors", 
+            mode: 'cors',
             headers: new Headers({
-              'Authorization': 'Bearer ' + this.idToken, 
-              'Accept': 'application/json'
-            }), 
-          })
-          .then(response => response.json())
-          .catch(errorCallback)
-          .then(successCallback);
-    }
+                Authorization: 'Bearer ' + idToken,
+                Accept: 'application/json'
+            })
+        })
+            .then((response) => {
+                return response.json().then((data) => {
+                    if (response.ok) {
+                        return data;
+                    } else {
+                        // TODO: Check if 401 is handled
+                        return Promise.reject({ status: response.status, data });
+                    }
+                });
+            })
+            .catch(errorCallback)
+            .then(successCallback);
+    };
+
+    postUserEntry = (data, successCallback, errorCallback) => {
+        let idToken = localStorage.getItem('id_token');
+        fetch(this.apiEndpoint, {
+            method: 'POST',
+            mode: 'cors',
+            body: JSON.stringify(data),
+            headers: new Headers({
+                Authorization: 'Bearer ' + idToken,
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            })
+        })
+            .then((response) => {
+                console.log(response);
+                // TODO: Not JSON! Not always. fix this.
+                return response.json().then((data) => {
+                    if (response.ok) {
+                        return data;
+                    } else {
+                        // TODO: Check if 401 is handled
+                        return Promise.reject({ status: response.status, data });
+                    }
+                });
+            })
+            .catch(errorCallback)
+            .then(successCallback);
+    };
 }

@@ -1,69 +1,82 @@
 import React, { Component } from 'react';
-import { Button, TextField, FormGroup } from '@material-ui/core';
+import { FormGroup, Input, InputAdornment } from '@material-ui/core';
+import AddCircle from '@material-ui/icons/AddCircle';
+import { withStyles, createStyles } from '@material-ui/core/styles';
 
-import PropTypes from 'prop-types'
-import uuid from 'uuid'
+import PropTypes from 'prop-types';
+import uuid from 'uuid';
 
-class AddTask  extends Component {
-	constructor(){
-		super();
-		this.state = {
-			newTask: {
-				name: "",
-				id: uuid.v4(),
-				done: false
-			}
-		}
-	}
+const styles = ({ palette }: Theme) =>
+    createStyles({
+        margin: {
+            textAlign: 'left',
+            color: palette.secondary
+        }
+    });
 
-	handleSubmit(e){
-		// We pass in the event and prevent it's submission.
-		if(this.state.newTask.name === ''){
-			alert("Please add a name");
-		} else {
-			this.props.addTask(this.state.newTask);
+class AddTask extends Component {
+    constructor() {
+        super();
+        this.state = {
+            newTask: {
+                name: '',
+                id: uuid.v4(),
+                done: false
+            }
+        };
+    }
 
-			this.setState({
-				newTask: {
-					name: "",
-					id: uuid.v4(),
-					done: false
-				}
-			});
-		}
-		e.preventDefault();
-	}
+    handleSubmit(e) {
+        // We pass in the event and prevent it's submission.
+        if (this.state.newTask.name === '') {
+            alert('Please add a name');
+        } else {
+            this.props.addTask(this.state.newTask);
 
-	handleChange(e) {
-		this.setState({ 
-			newTask: {
-				name: e.target.value,
-				id: uuid.v4(),
-				done: false
-			}
-		});
-  }
+            this.setState({
+                newTask: {
+                    name: '',
+                    id: uuid.v4(),
+                    done: false
+                }
+            });
+        }
+        e.preventDefault();
+    }
 
-  render() {
-    return (
-			<form onSubmit={this.handleSubmit.bind(this)}>
-				<FormGroup>
-          <TextField
-						value={this.state.newTask.name}
-						onChange={this.handleChange.bind(this)}
-            label="Enter Task"
-          />
-					<br/>
-					<Button type="submit" color="primary" variant="contained" value="Add">Add</Button>
-					<br/>
-				</FormGroup>
-      </form>
-    );
-  }
+    handleChange(e) {
+        this.setState({
+            newTask: {
+                name: e.target.value,
+                id: uuid.v4(),
+                done: false
+            }
+        });
+    }
+
+    render() {
+        // const { classes } = this.props;
+        return (
+            <form onSubmit={this.handleSubmit.bind(this)}>
+                <FormGroup>
+                    <Input
+                        value={this.state.newTask.name}
+                        onChange={this.handleChange.bind(this)}
+                        placeholder="New Task"
+                        startAdornment={
+                            <InputAdornment position="start">
+                                <AddCircle color="primary" />
+                            </InputAdornment>
+                        }
+                    />
+                </FormGroup>
+            </form>
+        );
+    }
 }
 
 AddTask.propTypes = {
-	addTask: PropTypes.func.isRequired
-}
+    addTask: PropTypes.func.isRequired
+};
 
-export default AddTask;
+export default withStyles(styles, { withTheme: true })(AddTask);
