@@ -27,6 +27,7 @@ export default class API {
     };
 
     postUserEntry = (data, successCallback, errorCallback) => {
+        console.log(data);
         let idToken = localStorage.getItem('id_token');
         fetch(this.apiEndpoint, {
             method: 'POST',

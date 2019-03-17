@@ -37,12 +37,97 @@ class App extends Component {
         };
     }
 
+    handleChange = (event, value) => {
+        this.setState({ value });
+    };
+
+    handleChangeIndex = (index) => {
+        this.setState({ value: index });
+    };
+
+    handleStateChangedInProject = (projectState) => {
+        let projects = this.state.projects;
+        let projectIndex = projects.findIndex((obj) => obj.id === projectState.id);
+
+        console.log(projectState);
+        projects[projectIndex] = projectState;
+        this.setState({
+            projects: projects
+        });
+
+        api.postUserEntry(
+            this.state.projects,
+            (response) => {
+                console.log('Update worked!');
+                console.log(response);
+            },
+            (error) => {
+                console.log('Error fetching data:', error);
+                this.forceUpdate();
+            }
+        );
+    };
+
+    handleNewProject = (newProject) => {
+        let projects = this.state.projects;
+
+        projects.push(newProject);
+        let tabButtons = this.getTabButtons(projects);
+        let projectItems = this.getProjectItems(projects);
+
+        this.setState({
+            projects: projects,
+            tabButtons: tabButtons,
+            projectItems: projectItems
+        });
+
+        api.postUserEntry(
+            this.state.projects,
+            (response) => {
+                console.log('Update worked!');
+                console.log(response);
+            },
+            (error) => {
+                console.log('Error fetching data:', error);
+                this.forceUpdate();
+            }
+        );
+    };
+
+    componentDidMount() {
+        // AJAX call here to get data from server
+        api.getUserEntry(
+            (responseJson) => {
+                let tabButtons = this.getTabButtons(responseJson['projects']);
+                let projectItems = this.getProjectItems(responseJson['projects']);
+
+                this.setState({
+                    id: responseJson['id'],
+                    projects: responseJson['projects'],
+                    tabButtons: tabButtons,
+                    projectItems: projectItems
+                });
+            },
+            (error) => {
+                console.log('Error fetching data:', error);
+                this.forceUpdate();
+            }
+        );
+    }
+
     getProjectItems = (projects) => {
         const { theme } = this.props;
 
         let projectItems = projects.map((project) => {
             //TODO: onDelete={this.deleteProject.bind(this)} onComplete={this.addProject.bind(this)}
-            return <Project key={project.id} project={project} dir={theme.direction} />;
+            return (
+                <Project
+                    key={project.id}
+                    project={project}
+                    stateChangeHandler={this.handleStateChangedInProject.bind(this)}
+                    dir={theme.direction}
+                />
+            );
         });
         return projectItems;
     };
@@ -62,60 +147,6 @@ class App extends Component {
         });
         return tabButtons;
     };
-
-    handleChange = (event, value) => {
-        this.setState({ value });
-    };
-
-    handleChangeIndex = (index) => {
-        this.setState({ value: index });
-    };
-
-    handleNewProject = (newProject) => {
-        let projects = this.state.projects;
-
-        projects.push(newProject);
-        let tabButtons = this.getTabButtons(projects);
-        let projectItems = this.getProjectItems(projects);
-
-        this.setState({
-            projects: projects,
-            tabButtons: tabButtons,
-            projectItems: projectItems,
-        });
-
-        api.postUserEntry( this.state.projects,
-            (response) => {
-                console.log('Update worked!');
-            },
-            (error) => {
-                console.log('Error fetching data:', error);
-                this.forceUpdate();
-            }
-        );
-    };
-
-    componentDidMount() {
-        // AJAX call here to get data from server
-        api.getUserEntry(
-            (responseJson) => {
-                
-                let tabButtons = this.getTabButtons(responseJson['projects']);
-                let projectItems = this.getProjectItems(responseJson['projects'])
-
-                this.setState({
-                    id: responseJson['id'],
-                    projects: responseJson['projects'],
-                    tabButtons: tabButtons,
-                    projectItems: projectItems,
-                });
-            },
-            (error) => {
-                console.log('Error fetching data:', error);
-                this.forceUpdate();
-            }
-        );
-    }
 
     render() {
         const { classes, theme } = this.props;

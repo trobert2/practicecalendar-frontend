@@ -43,7 +43,7 @@ class Project extends Component {
     getTasksFromResponse(response) {
         let tasks = response['tasks'];
         if (tasks === null) {
-            return tasks;
+            tasks = [];
         }
 
         tasks.forEach((task) => {
@@ -75,11 +75,11 @@ class Project extends Component {
         }
 
         for (let day of timeFrame.by('day')) {
-            // TODO: check for the negative and continue. No need for nested if's here.
-            if (completedDatesStringList.indexOf(day.format('DD-MM-YYYY')) < 0) {
-                if (!day.isSame(today, 'day')) {
-                    incompleteDates.push(day.toDate());
-                }
+            if (!completedDatesStringList.indexOf(day.format('DD-MM-YYYY')) < 0) {
+                continue
+            }
+            if (!day.isSame(today, 'day')) {
+                incompleteDates.push(day.toDate());
             }
         }
         return incompleteDates;
@@ -96,7 +96,7 @@ class Project extends Component {
             this.props.project['startDate'],
             this.props.project['completedDates']
         );
-        if (fetchedTasks !== null && fetchedTasks.length > 0 && fetchedTasks.findIndex(this.checkTodayDone) < 0) {
+        if (fetchedTasks.length > 0 && fetchedTasks.findIndex(this.checkTodayDone) < 0) {
             completedDates.push(moment().toDate());
         }
 
@@ -104,7 +104,10 @@ class Project extends Component {
             // TODO: Daca toate task-urile au astazi setat ca LastDoneDate, adauga `new moment().toDate()` la completedTasks
             completedDates: completedDates,
             incompleteDates: incompleteDates,
-            tasks: fetchedTasks
+            tasks: fetchedTasks,
+            id: this.props.project['id'],
+            name: this.props.project['name'],
+            startDate: this.props.project['startDate']
         });
     }
 
@@ -115,7 +118,10 @@ class Project extends Component {
         } else {
             tasks = [ task ];
         }
+
         this.setState({ tasks: tasks });
+
+        this.props.stateChangeHandler(this.state);
     }
 
     handleDeleteTask(id) {
@@ -124,25 +130,29 @@ class Project extends Component {
         tasks.splice(index, 1);
 
         this.setState({ tasks: tasks });
+        this.props.stateChangeHandler(this.state);
     }
 
     handleCompleteTask(id) {
         let tasks = this.state.tasks;
         let index = tasks.findIndex((x) => x.id === id);
-        // TODO: Call server and notify the task is completed and set it's LastDoneDate to today
+
         tasks[index]['done'] = true;
+        tasks[index]['lastDoneDate'] = moment().format('DD-MM-YYYY');
+
         console.log('Task done! Notify server');
 
         this.setState({ tasks: tasks });
+        this.props.stateChangeHandler(this.state);
     }
 
     handleCompleteAllTasks(id) {
-        // TODO: Call server and notify the day is done
-        console.log('All done for the day! Notify server today is done');
         // Mark today as complete. Add to the array
         let state = this.state;
-        state['completedDates'].push(moment().toDate());
+        state['completedDates'].push(moment().format('DD-MM-YYYY'));
+
         this.setState(state);
+        this.props.stateChangeHandler(this.state);
     }
 
     render() {
@@ -174,5 +184,6 @@ class Project extends Component {
 export default withStyles(styles, { withTheme: true })(Project);
 
 Project.propTypes = {
-    project: PropTypes.object.isRequired
+    project: PropTypes.object.isRequired,
+    stateChangeHandler: PropTypes.func.isRequired
 };
