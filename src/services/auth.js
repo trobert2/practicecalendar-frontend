@@ -9,7 +9,7 @@ export default class Auth {
         redirectUri:
             process.env.NODE_ENV === 'development'
                 ? 'http://localhost:3000/callback'
-                : 'http://www.practicecalendar.com/callback',
+                : 'https://practicecalendar.com/callback',
         audience: 'https://practicecalendar.eu.auth0.com/userinfo',
         responseType: 'token id_token',
         scope: 'openid'
